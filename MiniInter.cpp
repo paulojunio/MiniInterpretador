@@ -7,6 +7,9 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string>
+#include <sys/types.h>
+#include <dirent.h>
+
 
 using namespace std;
 
@@ -16,15 +19,39 @@ void criarDiretorio() {
    char nomeDirAux [256];
    scanf("%s", nomeDirAux);
    const char * nomeDir = nomeDirAux;
-   //int flag = mkdir (nomeDir,nomeDir);
-
+   int flag = mkdir (nomeDir,0755);
+   
+   printf("Foi criada a pasta %s", nomeDirAux);
 }
+
+/*void removerDiretorio() {
+   
+   printf("\nDigite o nome do diretório: ");
+   char nomeDirAux [256];
+   scanf("%s", nomeDirAux);
+   const char * nomeDir = nomeDirAux;
+   int flag = rmdir (nomeDir,0755);
+   
+   printf("Foi deletado a pasta %s", nomeDirAux);
+}*/
 
 void mudarDiretorio() {
 
 }
 void listarDiretorio() {
+  DIR *dp;
+  struct dirent *ep;
 
+  printf("\n");
+  dp = opendir ("./");
+  if (dp != NULL)
+    {
+      while (ep = readdir (dp))
+        puts (ep->d_name);
+      (void) closedir (dp);
+    }
+  else
+    perror ("Couldn't open the directory");
 }
 void criarArquivo() {
 
@@ -42,7 +69,14 @@ void mostrarArquivo() {
 
 }
 void criarArqTemp() {
+  FILE * tmp = tmpfile();
 
+  if(tmp == NULL) {
+    printf("Diretorio não criado, ative a permissão");
+  }else{
+    printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");
+    fputc(1,tmp);
+  }
 }
 int main() {
    
@@ -70,7 +104,7 @@ int main() {
       cin >> flag;
       switch(flag) {
          case 0:
-            printf("Programa está encerrando...");
+            printf("Programa está encerrando...\n");
             break;
          case 1:
             printf("Você escolheu a opção 1 - Criar um diretório.");
