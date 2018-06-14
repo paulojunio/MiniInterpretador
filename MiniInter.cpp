@@ -9,36 +9,48 @@
 #include <string>
 #include <sys/types.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 
 using namespace std;
 
 void criarDiretorio() {
    
-   printf("\nDigite o nome do diretório: ");
+   printf("\n\nDigite o nome do diretório: ");
    char nomeDirAux [256];
    scanf("%s", nomeDirAux);
    const char * nomeDir = nomeDirAux;
    int flag = mkdir (nomeDir,0755);
    
-   printf("Foi criada a pasta %s", nomeDirAux);
+   if(flag == 0){
+		printf("\nFoi criada a pasta: %s\n", nomeDirAux);
+   }else{
+		printf("\nNão foi possivel criar a pasta: %s\n", nomeDirAux);
+   }
 }
 
-/*void removerDiretorio() {
+void deletarDiretorio() {
    
-   printf("\nDigite o nome do diretório: ");
+   printf("\n\nDigite o nome do diretório: ");
    char nomeDirAux [256];
    scanf("%s", nomeDirAux);
    const char * nomeDir = nomeDirAux;
-   int flag = rmdir (nomeDir,0755);
+   int flag = rmdir (nomeDir);
    
-   printf("Foi deletado a pasta %s", nomeDirAux);
-}*/
+    if(flag == 0) {
+		printf("\nFoi deletada a pasta: %s\n", nomeDirAux);
+	}else{
+		printf("\nNão foi possivel deletar a pasta: %s\n", nomeDirAux);
+	}
+}		
 
 void mudarDiretorio() {
-
+	
 }
 void listarDiretorio() {
+  
+  printf("\n\nArquivos encontrados:\n");
   DIR *dp;
   struct dirent *ep;
 
@@ -51,13 +63,84 @@ void listarDiretorio() {
       (void) closedir (dp);
     }
   else
-    perror ("Couldn't open the directory");
+    perror ("\nNão é possivel abrir este diretorio.");
+  
+  printf("\n");
 }
+/*void criarArquivo() {
+   printf("\n\nDigite o nome do arquivo que será criado: ");
+   char nomeArq [256];
+   int opcao;
+   string linha;
+   scanf("%s", nomeArq);
+   FILE * file;
+   file = fopen(nomeArq,"w");
+   
+   if(file != NULL){
+		printf("\nFoi criado o arquivo: %s\n", nomeArq);
+		printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
+		cin >> opcao;
+		if(opcao == 1) {
+			printf("\nDigite o que você quiser, para parar digite \"parar\":\n");
+			cin >> linha;		
+			while(linha.compare("parar") != 0) {
+				fputs(linha.c_str(),file);
+				fputs("\n",file);
+				cin >> linha;
+			}			
+		}else if(opcao != 2){
+			printf("\nArquivo foi somente criado, opção invalida!\n");
+		}
+		fclose(file);	
+   }else{
+		printf("\nNão foi possivel criar o arquivo: %s\n", nomeArq);
+   }
+}*/
 void criarArquivo() {
-
+   printf("\n\nDigite o nome do arquivo que será criado: ");
+   int opcao;
+   string linha;
+   char nomeArqAux [256];
+   scanf("%s", nomeArqAux);
+   const char * nomeArq = nomeArqAux;
+   mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+   int flag = creat (nomeArq,mode);
+   //printf("%d\n",flag);
+   if(flag == 3) {
+		printf("\nFoi criado o arquivo: %s\n", nomeArq);
+		printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
+		cin >> opcao;
+		FILE * file;
+		file = fopen(nomeArqAux,"w");
+		if(opcao == 1) {
+			printf("\nDigite o que você quiser, para parar digite \"parar\":\n");
+			cin >> linha;		
+			while(linha.compare("parar") != 0) {
+				fputs(linha.c_str(),file);
+				fputs("\n",file);
+				cin >> linha;
+			}			
+		}else if(opcao != 2){
+			printf("\nArquivo foi somente criado, opção invalida!\n");
+		}
+		fclose(file);
+   }else{
+		printf("Não foi possivel criar o arquivo: %s\n", nomeArqAux);
+   }
 }
 void deletarArquivo() {
-
+	
+   printf("\n\nDigite o nome do arquivo que será deletado: ");
+   char nomeArqAux [256];
+   scanf("%s", nomeArqAux);
+   const char * nomeArq = nomeArqAux;
+   int flag = unlink (nomeArq);
+   
+   if(flag != -1){
+		printf("\nFoi delatado o arquivo: %s\n", nomeArqAux);
+   }else{
+		printf("\nNão foi possivel deletar o arquivo: %s\n", nomeArqAux);
+   }
 }
 void criarLinkArquivo() {
 
@@ -66,16 +149,40 @@ void deletarLinkArquivo() {
 
 }
 void mostrarArquivo() {
-
+   printf("\n\nDigite o nome do arquivo que será mostrado: ");
+   char nomeArqAux [256];
+   char * linha;
+   int aux;
+   scanf("%s", nomeArqAux);
+   const char * nomeArq = nomeArqAux;
+   int flag = open (nomeArq, O_RDONLY);
+   
+   if(flag != -1){
+		printf("oi?\n");
+		while(true) {
+			aux = read (flag, &linha, 1000);
+			if(aux > 0)
+				break;
+			printf("%s\n",linha);
+			printf("passo?");
+		}
+		close(flag);
+   }else{
+		printf("\nNão foi possivel deletar o arquivo: %s\n", nomeArqAux);
+   }
 }
 void criarArqTemp() {
-  FILE * tmp = tmpfile();
-
+  FILE * tmp;
+  tmp = tmpfile();
+  
   if(tmp == NULL) {
     printf("Diretorio não criado, ative a permissão");
   }else{
+	string teste;
     printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");
-    fputc(1,tmp);
+    fputs("C++ DAHORA",tmp);
+	cin >> teste;
+	fclose(tmp);
   }
 }
 int main() {
@@ -93,10 +200,10 @@ int main() {
    
    do{
       printf("\nEscolha uma das opções:");
-      printf("\n 1- Criar um diretório;");
+      printf("\n 1- Criar e apagar um diretório;");
       printf("\n 2- Mudar de diretório;");
       printf("\n 3- Listar o conteúdo de um diretório;");
-      printf("\n 4- Criar e a pagar arquivos;");
+      printf("\n 4- Criar e a apagar arquivos;");
       printf("\n 5- Criar e apagar links para arquivos;");
       printf("\n 6- Ler e mostrar conteúdo de arquivos texto;");
       printf("\n 7- Criar arquivos texto temporários, que serão apagados ao fim da execução.");
@@ -108,7 +215,15 @@ int main() {
             break;
          case 1:
             printf("Você escolheu a opção 1 - Criar um diretório.");
-            criarDiretorio();
+			printf("\n1 - Deseja criar um diretório;");
+            printf("\n2 - Deseja apagar um diretório(Ele precisa está vazio!!!).");
+            printf("\nOpção:");
+            cin >> opcao;
+            if( opcao == 1 ) {
+               criarDiretorio();
+            }else{
+               deletarDiretorio();
+            }
             break;
          case 2:
             printf("Você escolheu a opção 2 - Mudar de diretório.");
