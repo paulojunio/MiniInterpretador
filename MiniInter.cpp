@@ -1,12 +1,15 @@
 /** 
-  *
-  *
+  * Mini Inter de um sistema operaciona
+  * @actor Paulo Junio 
+  * @actor Joao Paulo 
+  * Professor Caram
   */
 #include <iostream>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -106,24 +109,25 @@ void criarArquivo() {
    mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
    int flag = creat (nomeArq,mode);
    //printf("%d\n",flag);
-   if(flag == 3) {
+   if(flag > 0) {
 		printf("\nFoi criado o arquivo: %s\n", nomeArq);
 		printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
 		cin >> opcao;
-		FILE * file;
-		file = fopen(nomeArqAux,"w");
 		if(opcao == 1) {
 			printf("\nDigite o que você quiser, para parar digite \"parar\":\n");
-			cin >> linha;		
-			while(linha.compare("parar") != 0) {
-				fputs(linha.c_str(),file);
-				fputs("\n",file);
+			cin >> linha;
+         linha += "\n";		
+			flag = open(nomeArq,O_CREAT|O_WRONLY,0600);
+			while(linha.compare("parar\n") != 0) {
+            const char * linhaAux = linha.c_str(); 
+            write(flag,linhaAux,linha.length());
 				cin >> linha;
+            linha += "\n";
 			}			
 		}else if(opcao != 2){
 			printf("\nArquivo foi somente criado, opção invalida!\n");
 		}
-		fclose(file);
+		
    }else{
 		printf("Não foi possivel criar o arquivo: %s\n", nomeArqAux);
    }
@@ -153,18 +157,23 @@ void mostrarArquivo() {
    char nomeArqAux [256];
    char * linha;
    int aux;
+   int lugar = 0;
    scanf("%s", nomeArqAux);
    const char * nomeArq = nomeArqAux;
    int flag = open (nomeArq, O_RDONLY);
    
    if(flag != -1){
-		printf("oi?\n");
+		//printf("oi?\n");
 		while(true) {
-			aux = read (flag, &linha, 1000);
-			if(aux > 0)
-				break;
+			aux = read (flag, &linha,lugar);
+         printf("oi?\n");
+			if(aux == 0) {
+				printf("oi?\n");
+            break;
+         }
 			printf("%s\n",linha);
-			printf("passo?");
+         
+			lugar += strlen(linha);
 		}
 		close(flag);
    }else{
@@ -172,17 +181,31 @@ void mostrarArquivo() {
    }
 }
 void criarArqTemp() {
+  char buffer [256] = "teste";
   FILE * tmp;
   tmp = tmpfile();
   
   if(tmp == NULL) {
-    printf("Diretorio não criado, ative a permissão");
+    printf("Arquivo não criado, ative a permissão");
   }else{
-	string teste;
-    printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");
-    fputs("C++ DAHORA",tmp);
-	cin >> teste;
-	fclose(tmp);
+    
+    printf("\nArquivo temporario criado\n");
+    do {
+      //printf("aa");
+      if (!fgets(buffer,256,stdin)) 
+         break;
+       //printf("aa");
+       fputs ("BALEIA",tmp);
+    } while (strlen(buffer) > 1);
+   
+    rewind(tmp);
+   
+    while (!feof(tmp)) {
+      if (fgets (buffer,256,tmp) == NULL) break;
+      fputs (buffer,stdout);
+    }
+   
+	//fclose(tmp);
   }
 }
 int main() {
