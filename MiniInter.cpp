@@ -14,7 +14,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <fcntl.h>
-
+#include <errno.h>
 
 using namespace std;
 
@@ -29,7 +29,22 @@ void criarDiretorio() {
    if(flag == 0){
 		printf("\nFoi criada a pasta: %s\n", nomeDirAux);
    }else{
-		printf("\nNão foi possivel criar a pasta: %s\n", nomeDirAux);
+		printf("\nNão foi possivel criar a pasta: %s, pois ", nomeDirAux);
+      
+      switch(errno) {
+         case EACCES:
+            printf("o diretório não pode ser gravado aqui, pois não permisão disponivel!");
+            break;
+         case EEXIST:
+            printf("o diretório já existe neste local!");
+            break;
+         case ENOSPC:
+            printf("o diretório não pode ser gravado aqui, pois não há espaço em disco!");
+            break;
+         default:
+            printf(" o diretório tem algum problema!");
+            break;
+      }
    }
 }
 
@@ -41,7 +56,7 @@ void deletarDiretorio() {
    const char * nomeDir = nomeDirAux;
    int flag = rmdir (nomeDir);
    
-    if(flag == 0) {
+   if(flag == 0) {
 		printf("\nFoi deletada a pasta: %s\n", nomeDirAux);
 	}else{
 		printf("\nNão foi possivel deletar a pasta: %s\n", nomeDirAux);
@@ -49,7 +64,17 @@ void deletarDiretorio() {
 }		
 
 void mudarDiretorio() {
-	
+   printf("\n\nDigite o nome do diretório de destino: ");
+	char nomeDirAux[256];
+   scanf("%s", nomeDirAux);
+   const char * nomeDir = nomeDirAux;
+   int flag = chdir (nomeDir);
+   
+   if(flag == 0) {
+		printf("\nFoi desta trabalhando na pasta: %s, agora.\n", nomeDirAux);
+	}else{
+		printf("\nNão foi possivel entrar na pasta: %s, pois\n", nomeDirAux);
+	}
 }
 void listarDiretorio() {
   
@@ -66,39 +91,10 @@ void listarDiretorio() {
       (void) closedir (dp);
     }
   else
-    perror ("\nNão é possivel abrir este diretorio.");
+    perror ("\nNão é possivel listar este diretorio.");
   
   printf("\n");
 }
-/*void criarArquivo() {
-   printf("\n\nDigite o nome do arquivo que será criado: ");
-   char nomeArq [256];
-   int opcao;
-   string linha;
-   scanf("%s", nomeArq);
-   FILE * file;
-   file = fopen(nomeArq,"w");
-   
-   if(file != NULL){
-		printf("\nFoi criado o arquivo: %s\n", nomeArq);
-		printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
-		cin >> opcao;
-		if(opcao == 1) {
-			printf("\nDigite o que você quiser, para parar digite \"parar\":\n");
-			cin >> linha;		
-			while(linha.compare("parar") != 0) {
-				fputs(linha.c_str(),file);
-				fputs("\n",file);
-				cin >> linha;
-			}			
-		}else if(opcao != 2){
-			printf("\nArquivo foi somente criado, opção invalida!\n");
-		}
-		fclose(file);	
-   }else{
-		printf("\nNão foi possivel criar o arquivo: %s\n", nomeArq);
-   }
-}*/
 void criarArquivo() {
    printf("\n\nDigite o nome do arquivo que será criado: ");
    int opcao;
@@ -108,7 +104,6 @@ void criarArquivo() {
    const char * nomeArq = nomeArqAux;
    mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
    int flag = creat (nomeArq,mode);
-   //printf("%d\n",flag);
    if(flag > 0) {
 		printf("\nFoi criado o arquivo: %s\n", nomeArq);
 		printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
@@ -124,8 +119,8 @@ void criarArquivo() {
 				cin >> linha;
             linha += "\n";
 			}			
-		}else if(opcao != 2){
-			printf("\nArquivo foi somente criado, opção invalida!\n");
+		}else if(opcao != 1){
+			printf("\nArquivo foi somente criado!\n");
 		}
 		
    }else{
@@ -155,25 +150,14 @@ void deletarLinkArquivo() {
 void mostrarArquivo() {
    printf("\n\nDigite o nome do arquivo que será mostrado: ");
    char nomeArqAux [256];
-   char * linha;
-   int aux;
-   int lugar = 0;
    scanf("%s", nomeArqAux);
    const char * nomeArq = nomeArqAux;
    int flag = open (nomeArq, O_RDONLY);
-   
+   char * linha = (char*) calloc(1000,sizeof(char));
    if(flag != -1){
-		//printf("oi?\n");
-		while(true) {
-			aux = read (flag, &linha,lugar);
-         printf("oi?\n");
-			if(aux == 0) {
-				printf("oi?\n");
-            break;
-         }
-			printf("%s\n",linha);
-         
-			lugar += strlen(linha);
+      printf("Mostrando o que foi encontrado no arquivo:\n");
+		while(read (flag, linha,1000) > 0) {
+         printf("%s",linha);    
 		}
 		close(flag);
    }else{
