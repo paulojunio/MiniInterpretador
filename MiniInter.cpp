@@ -426,7 +426,7 @@ int main() {
             printf("\n 4 - Criar e a apagar arquivos;");
             printf("\n 5 - Criar e apagar links para arquivos;");
             printf("\n 6 - Ler e mostrar conteúdo de arquivos texto;");
-            printf("\n 7 - Criar arquivos texto temporários, que serão apagados ao fim da execução.\n");
+            printf("\n 7 - Criar arquivos texto temporários, que serão apagados ao fim da execução.");
             printf("\n 8 - Mostrar todas as opções do programa.\n");
             break;
          default:
