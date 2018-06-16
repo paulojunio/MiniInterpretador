@@ -129,7 +129,7 @@ void criarArquivo() {
 }
 void deletarArquivo() {
 	
-   printf("\n\nDigite o nome do arquivo que será deletado: ");
+   printf("\n\nDigite o nome do arquivo ou link de um arquivo que será deletado: ");
    char nomeArqAux [256];
    scanf("%s", nomeArqAux);
    const char * nomeArq = nomeArqAux;
@@ -142,10 +142,21 @@ void deletarArquivo() {
    }
 }
 void criarLinkArquivo() {
-
-}
-void deletarLinkArquivo() {
-
+   printf("\n\nDigite o nome do arquivo que será linkado: ");
+   char linkArqAux [256];
+   char nomeArqAux [256];
+   scanf("%s", nomeArqAux);  
+   printf("\n\nDigite o nome do link do arquivo: ");
+   scanf("%s", linkArqAux);
+   const char * linkArq = linkArqAux;
+   const char * nomeArq = nomeArqAux;
+   int flag = symlink (nomeArq,linkArq);
+   
+   if(flag != -1){
+		printf("\nFoi linkado o arquivo: %s, usado o link: %s\n", nomeArqAux,linkArqAux);
+   }else{
+		printf("\nNão foi possivel deletar o arquivo: %s\n", nomeArqAux);
+   }
 }
 void mostrarArquivo() {
    printf("\n\nDigite o nome do arquivo que será mostrado: ");
@@ -161,49 +172,38 @@ void mostrarArquivo() {
 		}
 		close(flag);
    }else{
-		printf("\nNão foi possivel deletar o arquivo: %s\n", nomeArqAux);
+		printf("\nNão foi possivel mostrar o arquivo: %s\n", nomeArqAux);
    }
 }
-void criarArqTemp() {
-  char buffer [256] = "teste";
-  FILE * tmp;
-  tmp = tmpfile();
+FILE * criarArqTemp(FILE * file) {
   
-  if(tmp == NULL) {
-    printf("Arquivo não criado, ative a permissão");
+  if(file == NULL) {
+      printf("\nCriando arquivo temporario!\n");
+      file = tmpfile();
+      
+      if(file != NULL) {
+         printf("Foi criado um arquivo temporario\n");
+      }else{
+         printf("Error ao criar arquivo temporario\n");
+      }
   }else{
-    
-    printf("\nArquivo temporario criado\n");
-    do {
-      //printf("aa");
-      if (!fgets(buffer,256,stdin)) 
-         break;
-       //printf("aa");
-       fputs ("BALEIA",tmp);
-    } while (strlen(buffer) > 1);
-   
-    rewind(tmp);
-   
-    while (!feof(tmp)) {
-      if (fgets (buffer,256,tmp) == NULL) break;
-      fputs (buffer,stdout);
-    }
-   
-	//fclose(tmp);
+      printf("Arquivo temporario já foi criando antes, deseja exclui-lo?\n1 - Sim.\n2 - Nao\nOpcao: ");
+      int opcao;
+      cin >> opcao;
+      if(opcao == 1) {
+         fclose(file);
+         file = NULL;
+         printf("\nArquivo temporario excluido!\n");
+      }
   }
+  return file;
 }
 int main() {
    
+   FILE * file = NULL;
    int flag = -1;
    int opcao;
    printf("--TRABALHO DE SISTEMA OPERACIONAIS--\nMini interpretador de comandos em C++\nAbaixo esta todos os comandos:\n");
-   /*printf("\n 1- Criar um diretório");
-   printf("\n 2- Mudar de diretório");
-   printf("\n 3- Listar o conteúdo de um diretório");
-   printf("\n 4- Criar e a pagar arquivos");
-   printf("\n 5- Criar e apagar links para arquivos");
-   printf("\n 6- Ler e mostrar conteúdo de arquivos texto");
-   printf("\n 7- Criar arquivos texto temporários, que serão apagados ao fim da execução");*/
    
    do{
       printf("\nEscolha uma das opções:");
@@ -261,7 +261,7 @@ int main() {
             if( opcao == 1 ) {
                criarLinkArquivo();
             }else{
-               deletarLinkArquivo();
+               deletarArquivo();
             }           
             break;
          case 6:
@@ -270,7 +270,7 @@ int main() {
             break;
          case 7:
             printf("Você escolheu a opção 7 - Criar arquivos texto temporários.");
-            criarArqTemp();
+            file = criarArqTemp(file);
             break;
          default:
             printf("Opção não existe.");  
