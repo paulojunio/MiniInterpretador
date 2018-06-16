@@ -30,9 +30,10 @@ void criarDiretorio() {
    int flag = mkdir (nomeDir,0755);
    
    if(flag == 0){
-		printf("Foi criada a pasta: %s\n", nomeDirAux);
-   }else{
-		printf("Não foi possivel criar a pasta: %s, pois ", nomeDirAux);
+      printf("Foi criada a pasta: %s\n", nomeDirAux);
+   }
+   else{
+      printf("Não foi possivel criar a pasta: %s, pois ", nomeDirAux);
       
       switch(errno) {
          case EACCES:
@@ -63,9 +64,10 @@ void deletarDiretorio() {
    int flag = rmdir (nomeDir);
    
    if(flag == 0) {
-		printf("Foi deletada a pasta: %s\n", nomeDirAux);
-	}else{
-		printf("Não foi possivel deletar a pasta: %s, pois ", nomeDirAux);
+      printf("Foi deletada a pasta: %s\n", nomeDirAux);
+   }
+   else{
+      printf("Não foi possivel deletar a pasta: %s, pois ", nomeDirAux);
       
       switch(errno) {
          case EACCES:
@@ -81,7 +83,7 @@ void deletarDiretorio() {
             printf("o diretório tem algum problema!\n");
             break;
       }
-	}
+   }
 }		
 
 /**
@@ -89,7 +91,7 @@ void deletarDiretorio() {
   */
 void mudarDiretorio() {
    printf("\nDigite o nome do diretório de destino(Caso queira voltar um diretório, escreva \"..\"): ");
-	char nomeDirAux [256];
+   char nomeDirAux [256];
    scanf("%s", nomeDirAux);
    const char * nomeDir = nomeDirAux;
    int flag = chdir (nomeDir);
@@ -97,11 +99,13 @@ void mudarDiretorio() {
    if(flag == 0) {
       if(strcmp (nomeDirAux,"..") == 0) {
          printf("Você volto uma pasta!\n");
-      }else{
+      }
+      else{
          printf("Você esta trabalhando na pasta: %s, agora.\n", nomeDirAux);
       }	
-	}else{
-		printf("Não foi possivel entrar na pasta: %s, pois ", nomeDirAux);
+   }
+   else{
+      printf("Não foi possivel entrar na pasta: %s, pois ", nomeDirAux);
       
       switch(errno) {
          case EACCES:
@@ -117,29 +121,29 @@ void mudarDiretorio() {
             printf("o diretório tem algum problema!\n");
             break;
       }
-	}
+   }
 }
 /**
   * Metodo de listar o diretorio.
   */
 void listarDiretorio() {
   
-  printf("\nArquivos encontrados:\n");
-  DIR *dp;
-  struct dirent *ep;
+   printf("\nArquivos encontrados:\n");
+   DIR *dp;
+   struct dirent *ep;
 
-  printf("\n");
-  dp = opendir ("./");
-  if (dp != NULL)
-    {
+   printf("\n");
+   dp = opendir ("./");
+   if (dp != NULL)
+   {
       while (ep = readdir (dp))
-        puts (ep->d_name);
+         puts (ep->d_name);
       (void) closedir (dp);
-    }
-  else
-    perror ("Não é possivel listar este diretorio.");
+   }
+   else
+      perror ("Não é possivel listar este diretorio.");
   
-  printf("\n");
+   printf("\n");
 }
 /**
   * Metodo de criar um arquivo.
@@ -154,27 +158,29 @@ void criarArquivo() {
    mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
    int flag = creat(nomeArq,mode);
    if(flag != -1) {
-		printf("Foi criado o arquivo: %s\n", nomeArq);
-		printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
-		cin >> opcao;
-		if(opcao == 1) {
-			printf("Digite o que você quiser, para parar digite \"parar\":\n");
-			cin >> linha;
+      printf("Foi criado o arquivo: %s\n", nomeArq);
+      printf("Arquivo criado, deseja escrever algo nele?\n1 - Sim.\n2 - Não.\nOpção:");	
+      cin >> opcao;
+      if(opcao == 1) {
+         printf("Digite o que você quiser, para parar digite \"parar\":\n");
+         cin >> linha;
          linha += "\n";		
-			flag = open(nomeArq,O_CREAT|O_WRONLY,0600);
-			while(linha.compare("parar\n") != 0) {
+         flag = open(nomeArq,O_CREAT|O_WRONLY,0600);
+         while(linha.compare("parar\n") != 0) {
             const char * linhaAux = linha.c_str(); 
             write(flag,linhaAux,linha.length());
-				cin >> linha;
+            cin >> linha;
             linha += "\n";
-			}			
+         }			
          close(flag);
-		}else if(opcao != 1){
-			printf("Arquivo foi somente criado!\n");
-		}
-		
-   }else{
-		printf("Não foi possivel criar o arquivo: %s, pois ", nomeArqAux);
+      }
+      else if(opcao != 1){
+         printf("Arquivo foi somente criado!\n");
+      }
+   	
+   }
+   else{
+      printf("Não foi possivel criar o arquivo: %s, pois ", nomeArqAux);
       
       switch(errno) {
          case EACCES:
@@ -208,9 +214,10 @@ void deletarArquivo() {
    int flag = unlink (nomeArq);
    
    if(flag != -1){
-		printf("Foi delatado o arquivo/link: %s\n", nomeArqAux);
-   }else{
-		printf("Não foi possivel deletar o arquivo/link: %s, pois ", nomeArqAux);
+      printf("Foi delatado o arquivo/link: %s\n", nomeArqAux);
+   }
+   else{
+      printf("Não foi possivel deletar o arquivo/link: %s, pois ", nomeArqAux);
       
       switch(errno) {
          case EACCES:
@@ -243,9 +250,10 @@ void criarLinkArquivo() {
    int flag = symlink (nomeArq,linkArq);
    
    if(flag != -1){
-		printf("Foi linkado o arquivo: %s, usado o link: %s\n", nomeArqAux,linkArqAux);
-   }else{
-		printf("Não foi possivel criar um link de arquivo: %s, pois", nomeArqAux);
+      printf("Foi linkado o arquivo: %s, usado o link: %s\n", nomeArqAux,linkArqAux);
+   }
+   else{
+      printf("Não foi possivel criar um link de arquivo: %s, pois", nomeArqAux);
       
       switch(errno) {
          case EACCES:
@@ -281,12 +289,13 @@ void mostrarArquivo() {
    char * linha = (char*) calloc(1000,sizeof(char));
    if(flag != -1){
       printf("Mostrando o que foi encontrado no arquivo:\n");
-		while(read (flag, linha,1000) > 0) {
+      while(read (flag, linha,1000) > 0) {
          printf("%s",linha);    
-		}
-		close(flag);
-   }else{
-		printf("Não foi possivel mostrar o arquivo: %s, pois ", nomeArqAux);
+      }
+      close(flag);
+   }
+   else{
+      printf("Não foi possivel mostrar o arquivo: %s, pois ", nomeArqAux);
       
       switch(errno) {
          case EACCES:
@@ -306,16 +315,18 @@ void mostrarArquivo() {
   */
 FILE * criarArqTemp(FILE * file) {
   
-  if(file == NULL) {
+   if(file == NULL) {
       printf("\nCriando arquivo temporario!\n");
       file = tmpfile();
       
       if(file != NULL) {
          printf("Foi criado um arquivo temporario.\n");
-      }else{
+      }
+      else{
          printf("Error ao criar arquivo temporario.\n");
       }
-  }else{
+   }
+   else{
       printf("Arquivo temporario já foi criando antes, deseja exclui-lo?\n1 - Sim.\n2 - Nao\nOpcao: ");
       int opcao;
       cin >> opcao;
@@ -324,8 +335,8 @@ FILE * criarArqTemp(FILE * file) {
          file = NULL;
          printf("Arquivo temporario excluido!\n");
       }
-  }
-  return file;
+   }
+   return file;
 }
 /**
   * Metodo main.
@@ -354,13 +365,14 @@ int main() {
             break;
          case 1:
             printf("\nVocê escolheu a opção 1 - Criar um diretório.");
-			printf("\n1 - Deseja criar um diretório;");
+            printf("\n1 - Deseja criar um diretório;");
             printf("\n2 - Deseja apagar um diretório(Ele precisa está vazio!!!).");
             printf("\nOpção:");
             cin >> opcao;
             if( opcao == 1 ) {
                criarDiretorio();
-            }else if ( opcao == 2 ){
+            }
+            else if ( opcao == 2 ){
                deletarDiretorio();
             }
             break;
@@ -380,7 +392,8 @@ int main() {
             cin >> opcao;
             if( opcao == 1 ) {
                criarArquivo();
-            }else if( opcao == 2 ){
+            }
+            else if( opcao == 2 ){
                deletarArquivo();
             }
             break;
@@ -392,7 +405,8 @@ int main() {
             cin >> opcao;
             if( opcao == 1 ) {
                criarLinkArquivo();
-            }else if( opcao == 2 ){
+            }
+            else if( opcao == 2 ){
                deletarArquivo();
             }           
             break;
